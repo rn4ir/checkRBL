@@ -14,17 +14,6 @@ with open("rbllist.txt", "r") as rbltext:
 rbltext.close()
 
 def validateIP(ipaddr):
-    """
-    if ipaddress.ip_address(ipaddr):
-        if ipaddress.IPv4Address(ipaddr):
-            return 1
-        elif ipaddress.IPv6Address(ipaddr):
-            return 1
-        else:
-            return 0
-    else:
-        return 0
-    """
     try:
         ipaddress.ip_address(ipaddr)
         if ipaddress.IPv4Address(ipaddr):
@@ -34,14 +23,23 @@ def validateIP(ipaddr):
         else:
             return 0
     except ValueError as e:
-        print (str(e.args))
+        print (e.args[0])
 
 def networkIP (ipaddr):
     if ipaddress.ip_address(ipaddr).is_private:
-        print ("Private IP. Exiting.." + ipaddr)
+        print (ipaddr + " is a Private IP. Exiting..")
         sys.exit()
     else:
         return ipaddr
+
+def revIP (ipaddr):
+    reverseIP = '.'.join((ipaddr).split(".")[::-1])
+    return (reverseIP)
+
+def checkRBL (ipaddr):
+    rev_ipaddr = revIP(ipaddr)
+    query_string = rev_ipaddr + "." + rbllist[0]
+    print (query_string)
 
 if len(sys.argv) < 2:
     print ("Enter at least one IP")
@@ -52,6 +50,6 @@ else:
     IP = sys.argv[1]
     if validateIP(IP):
         if networkIP(IP):
-            print (IP)
+            checkRBL(IP)
     else:
-        print ("incorrect input")
+        print ("Incorrect input, please try again. Exiting...")
