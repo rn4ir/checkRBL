@@ -3,6 +3,8 @@
 # imports
 import sys
 import ipaddress
+import dns.resolver
+from timeit import default_timer as timer
 
 rbllist = []
 ctr = 0
@@ -37,19 +39,39 @@ def revIP (ipaddr):
     return (reverseIP)
 
 def checkRBL (ipaddr):
+    dnsrecords = []
     rev_ipaddr = revIP(ipaddr)
-    query_string = rev_ipaddr + "." + rbllist[0]
-    print (query_string)
+
+    for rbl in rbllist:
+        query_string = rev_ipaddr + "." + rbl
+#        print (query_string)
+        
+        dnsResolver = dns.resolver.Resolver()
+        dnsResolver.timeout = 1
+        dnsResolver.lifetime = 1
+        try:
+            dnsAnswer = dnsResolver.query(query_string, "A")
+            if len(dnsAnswer) > 0:
+                dnsrecords.append(ipaddr)
+                dnsrecords.append(rbl)
+                txtAnswer = dnsResolver.query(query_string, "TXT")
+                for rdata in txtAnswer:
+                    dnsrecords.append(rdata)
+        except:
+            pass
+    print (dnsrecords)
 
 if len(sys.argv) < 2:
     print ("Enter at least one IP")
 elif len(sys.argv) > 2:
     print ("Enter only one IP")
 else:
-    #print (sys.argv[1])
     IP = sys.argv[1]
+    start = timer()
     if validateIP(IP):
         if networkIP(IP):
             checkRBL(IP)
     else:
         print ("Incorrect input, please try again. Exiting...")
+    end = timer()
+print(end - start)
