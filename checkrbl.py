@@ -40,6 +40,7 @@ def revIP (ipaddr):
 
 def checkRBL (ipaddr):
     dnsrecords = []
+    errlist = []
     rev_ipaddr = revIP(ipaddr)
 
     for rbl in rbllist:
@@ -57,9 +58,11 @@ def checkRBL (ipaddr):
                 txtAnswer = dnsResolver.query(query_string, "TXT")
                 for rdata in txtAnswer:
                     dnsrecords.append(rdata)
-        except:
-            pass
+        except Exception as e:
+            errlist.append(rbl)
+            errlist.append(e)
     print (dnsrecords)
+    print (errlist)
 
 if len(sys.argv) < 2:
     print ("Enter at least one IP")
