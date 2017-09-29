@@ -10,6 +10,7 @@ import argparse
 rbllist = []
 ctr = 0
 IP = ""
+dnsrecords = []
 
 def read_rbl_list():
 
@@ -41,15 +42,11 @@ def revIP (ipaddr):
     reverseIP = '.'.join((ipaddr).split(".")[::-1])
     return (reverseIP)
 
-def checkRBL (ipaddr):
-    dnsrecords = []
+def rbl_lookup(ip):
+    start = timer()
     errlist = []
-    rev_ipaddr = revIP(ipaddr)
-
-    read_rbl_list()
-
     for rbl in rbllist:
-        query_string = rev_ipaddr + "." + rbl
+        query_string = ip + "." + rbl
         
         dnsResolver = dns.resolver.Resolver()
         dnsResolver.timeout = 1
@@ -65,8 +62,16 @@ def checkRBL (ipaddr):
         except Exception as e:
             errlist.append(rbl)
             errlist.append(e)
-    print (dnsrecords)
+    end = timer()
+    print(end - start) 
+    print(dnsrecords)
 #    print (errlist)
+
+def checkRBL (ipaddr):
+    rev_ipaddr = revIP(ipaddr)
+    read_rbl_list()
+
+    rbl_lookup(rev_ipaddr)
 
 def main():
     """
