@@ -5,15 +5,18 @@ import sys
 import ipaddress
 import dns.resolver
 from timeit import default_timer as timer
+import argparse
 
 rbllist = []
 ctr = 0
 IP = ""
 
-with open("rbllist.txt", "r") as rbltext:
-    for line in rbltext:
-        rbllist.append(line.strip())
-rbltext.close()
+def read_rbl_list():
+
+    with open("rbllist.txt", "r") as rbltext:
+        for line in rbltext:
+            rbllist.append(line.strip())
+    rbltext.close()
 
 def validateIP(ipaddr):
     try:
@@ -43,6 +46,8 @@ def checkRBL (ipaddr):
     errlist = []
     rev_ipaddr = revIP(ipaddr)
 
+    read_rbl_list()
+
     for rbl in rbllist:
         query_string = rev_ipaddr + "." + rbl
         
@@ -63,17 +68,27 @@ def checkRBL (ipaddr):
     print (dnsrecords)
 #    print (errlist)
 
-if len(sys.argv) < 2:
-    print ("Enter at least one IP")
-elif len(sys.argv) > 2:
-    print ("Enter only one IP")
-else:
-    IP = sys.argv[1]
-    start = timer()
-    if validateIP(IP):
-        if networkIP(IP):
-            checkRBL(IP)
+def main():
+    """
+    Main function.
+    Checks command-line arguments and calls the relevant function.
+    """
+    cli_argparser = argparse.ArgumentParser(description='')
+    cli_argparser.add_argument('-i', '--ip', help="Enter the IP address to be checked", required=False)
+    cli_argparser.add_argument('-d', '--domain', help="Enter the domain name to be checked", required=False)
+    cli_args = cli_argparser.parse_args()
+
+    if (cli_args.domain and cli_args.ip):
+        print ("Invalid input. Enter either the IP address or the Domain name")
+    elif (cli_args.ip):
+        if validateIP(cli_args.ip):
+            if networkIP(cli_args.ip):
+                checkRBL(cli_args.ip)
+    elif (cli_args.domain):
+        print ("Domain")
+        # Reverse look up domain and then test the IP
     else:
-        print ("Incorrect input, please try again. Exiting...")
-    end = timer()
-print(end - start)
+        print (cli_argparser.print_help())
+
+if __name__ == '__main__':
+    sys.exit(main())
