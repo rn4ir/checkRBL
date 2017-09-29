@@ -45,7 +45,6 @@ def checkRBL (ipaddr):
 
     for rbl in rbllist:
         query_string = rev_ipaddr + "." + rbl
-#        print (query_string)
         
         dnsResolver = dns.resolver.Resolver()
         dnsResolver.timeout = 1
@@ -62,7 +61,7 @@ def checkRBL (ipaddr):
             errlist.append(rbl)
             errlist.append(e)
     print (dnsrecords)
-    print (errlist)
+#    print (errlist)
 
 if len(sys.argv) < 2:
     print ("Enter at least one IP")
