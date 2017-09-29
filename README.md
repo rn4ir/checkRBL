@@ -1,4 +1,4 @@
-#### CheckRBL - A python application to check an IP against a list of RBLs (Realtime Blackhole lists) - *WIP*
+#### CheckRBL - A python application to check an IP against a list of RBLs (Realtime Blackhole lists) - ***WIP***
   
 ##### Requirements
 
