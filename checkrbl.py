@@ -7,18 +7,20 @@ import dns.resolver
 from timeit import default_timer as timer
 import argparse
 
+# Variable Declaration
 rbllist = []
 ctr = 0
 IP = ""
 dnsrecords = []
 
+# Read RBL list into a list
 def read_rbl_list():
-
     with open("rbllist.txt", "r") as rbltext:
         for line in rbltext:
             rbllist.append(line.strip())
     rbltext.close()
 
+# Validate the IP address
 def validateIP(ipaddr):
     try:
         ipaddress.ip_address(ipaddr)
@@ -31,6 +33,7 @@ def validateIP(ipaddr):
     except ValueError as e:
         print (e.args[0])
 
+# Check if the IP is a private or a public IP
 def networkIP (ipaddr):
     if ipaddress.ip_address(ipaddr).is_private:
         print (ipaddr + " is a Private IP. Exiting..")
@@ -38,6 +41,7 @@ def networkIP (ipaddr):
     else:
         return ipaddr
 
+# Function to reverse an IP
 def revIP (ipaddr):
     reverseIP = '.'.join((ipaddr).split(".")[::-1])
     return (reverseIP)
