@@ -47,18 +47,23 @@ def revIP (ipaddr):
     return (reverseIP)
 
 def rbl_lookup(ip):
+
+    print ("\n\n" + ip + "\n\n")
+
     start = timer()
     errlist = []
     for rbl in rbllist:
         query_string = ip + "." + rbl
         
+        print ("\nChecking" + query_string)
+
         dnsResolver = dns.resolver.Resolver()
-        dnsResolver.timeout = 1
-        dnsResolver.lifetime = 1
+        dnsResolver.timeout = 5
+        dnsResolver.lifetime = 5
         try:
             dnsAnswer = dnsResolver.query(query_string, "A")
             if len(dnsAnswer) > 0:
-                dnsrecords.append(ipaddr)
+                dnsrecords.append(ip)
                 dnsrecords.append(rbl)
                 txtAnswer = dnsResolver.query(query_string, "TXT")
                 for rdata in txtAnswer:
@@ -69,7 +74,7 @@ def rbl_lookup(ip):
     end = timer()
     print(end - start) 
     print(dnsrecords)
-#    print (errlist)
+    print (errlist)
 
 def checkRBL (ipaddr):
     rev_ipaddr = revIP(ipaddr)
